@@ -94,11 +94,4 @@ python src/dictionary_learning.py
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License. Feel free to use and modify it for your own projects!
-
----
-
-## 👤 Author
-Created by **[Your Name]** - [Your Contact Information]
 
