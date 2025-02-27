@@ -1,25 +1,23 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.feature_extraction.image import extract_patches_2d
+import cv2
 
-def reconstruct_image(patches, dictionary, coefficients, image_shape=(150, 150)):
-    reconstructed_patches = np.dot(coefficients, dictionary.T)
-    reconstructed_image = np.zeros(image_shape)
-    patch_idx = 0
-    for i in range(0, image_shape[0] - 8 + 1, 4):
-        for j in range(0, image_shape[1] - 8 + 1, 4):
-            reconstructed_image[i:i + 8, j:j + 8] = reconstructed_patches[patch_idx].reshape(8, 8)
-            patch_idx += 1
+# Function to load an image (you can replace this with your preferred method)
+def load_image(image_path):
+    return cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+
+# Function to extract patches from an image
+def extract_image_patches(image, patch_size=(8, 8), max_patches=1000, save_path=None):
+    # Extract patches
+    patches = extract_patches_2d(image, patch_size, max_patches=max_patches)
+    patches = patches.reshape(patches.shape[0], -1)  # Flatten each patch into a 1D array
     
-    return reconstructed_image
+    # Save patches to a .npy file if save_path is provided
+    if save_path:
+        np.save(save_path, patches)
+    
+    return patches
 
-def visualize_dictionary(dictionary):
-    fig, axes = plt.subplots(1, 10, figsize=(15, 15))
-    for i in range(10):
-        ax = axes[i]
-        ax.imshow(dictionary[:, i].reshape(8, 8), cmap='gray')
-        ax.axis('off')
-    plt.show()
-
-if __name__ == '__main__':
-    dictionary = np.load('../outputs/dictionary.npy')
-    visualize_dictionary(dictionary)
+# Function to normalize the patches
+def normalize_patches(patches):
+    return patches / np.linalg.norm(patches, axis=1, keepdims=True)  # L2 normalization
